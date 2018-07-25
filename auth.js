@@ -1,6 +1,8 @@
 const octokit = require('@octokit/rest')();
 const jwt = require('jsonwebtoken');
 
+const debug = require('debug')('wpt-check:auth')
+
 // getToken() does two things:
 // https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app
 // https://developer.github.com/v3/apps/#create-a-new-installation-token
@@ -22,8 +24,8 @@ async function getToken() {
     });
 
     const result = await octokit.apps.createInstallationToken({installation_id: 255453});
-    //console.log(result);
-    return result.data.token
+    debug(result);
+    return result.data.token;
 }
 
 async function main() {
@@ -55,7 +57,7 @@ async function main() {
 	}],
     });
 
-    console.log(result);
+    debug(result);
 }
 
 main();

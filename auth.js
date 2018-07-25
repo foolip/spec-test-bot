@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 //
 // TODO: "Installation tokens expire one hour from the time you create them."
 async function getToken() {
-    const cert = process.env.APP_PEM;
+    const cert = process.env.APP_PRIVATE_KEY;
     const appId = process.env.APP_ID;
 
     const appToken = jwt.sign({}, cert, {

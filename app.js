@@ -1,11 +1,13 @@
 const express = require('express');
-const PORT = 8080;
 
 const app = express();
 app.use(express.json({
     verify: (req, res, buf, encoding) => {
+	const secret = process.env.APP_WEBHOOK_SECRET;
+	if (!secret)
+	    return;
 	const signature = req.header('x-hub-signature')
-	console.log(`TODO: verify signature ${signature}`)
+	console.log(`TODO: verify signature ${signature}`);
 	if (signature != 'sha1=30816a3aa38e10f66819a3c84868db9cc87cd2a2')
 	    throw new Error(`Signature mismatch`);
     }
@@ -27,4 +29,5 @@ app.post('/webhook', (req, res) => {
     res.send('OK');
 })
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+const port = process.env.APP_PORT || 8080;
+app.listen(port, () => console.log(`Listening on port ${port}`));

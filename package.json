@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
     "@octokit/rest": "^15.9.4",
     "express": "^4.16.3",

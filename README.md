@@ -1,4 +1,8 @@
-== Running ==
+# WPT Coverage Check
+
+This GitHub App aims to provide a [check](https://developer.github.com/v3/checks/) for PRs to verify that changes to web platform specs are accompanied by PRs or issues on [web-platform-tests](https://github.com/web-platform-tests/wpt). This is effectively tooling to serve as a reminder of [testing policy](https://github.com/foolip/testing-in-standards/blob/master/policy.md), although it will be easy to bypass/ignore.
+
+## Running
 
 To run the server, first define the following environment variables:
  * `APP_ID` is the numeric ID of the GitHub App

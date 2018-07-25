@@ -10,6 +10,6 @@ The [`X-Hub-Signature`](https://developer.github.com/webhooks/securing/) header 
 
 The [GitHub API](https://developer.github.com/v3/) will be used to look for links to web-platform-tests on PRs. This information itself is public, but unauthenticated requests will be [rate limited](https://developer.github.com/v3/rate_limit/).
 
-As is [well documented](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app), to get an [installation token](https://developer.github.com/v3/apps/#create-a-new-installation-token) which can be used for the GitHub API, we have to first sign a JSON Web Token with the app ID using the app secret key. Using this, we can an API token valid for 1 hour.
+As is [well documented](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app), to get an [installation token](https://developer.github.com/v3/apps/#create-a-new-installation-token) which can be used for the GitHub API, we have to first generate a JSON Web Token using the app ID and secret key. Using this, we can get an installation token valid for 1 hour.
 
 TODO: How is the token updated hourly?

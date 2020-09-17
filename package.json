@@ -12,6 +12,7 @@
     "node": ">=12"
   },
   "scripts": {
+    "deploy": "gcloud app deploy --project=spec-test-bot",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "start": "node app.js"

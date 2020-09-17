@@ -14,8 +14,7 @@
 
 const express = require('express');
 const checks = require('./lib/checks.js');
-
-const debug = require('debug')('wpt-check:app');
+const logger = require('./lib/logger');
 
 const app = express();
 app.use(express.json({
@@ -25,30 +24,33 @@ app.use(express.json({
       return;
     }
     const signature = req.header('x-hub-signature');
-    debug(`TODO: verify signature ${signature}`);
+    logger.debug(`TODO: verify signature ${signature}`);
     if (signature != 'sha1=30816a3aa38e10f66819a3c84868db9cc87cd2a2') {
       throw new Error(`Signature mismatch`);
     }
   },
 }));
 
-app.get('/', (req, res) => res.send('Hello World!'));
+app.get('/', (req, res) => {
+  logger.debug('GET /');
+  res.send('Hello World!');
+});
 
 app.get('/callback', (req, res) => {
   res.send('TODO');
 });
 
 app.post('/webhook', (req, res) => {
-  debug('/webhook invoked');
+  logger.debug('/webhook invoked');
 
   const deliveryId = req.header('x-github-delivery');
-  debug(`X-GitHub-Delivery: ${deliveryId}`);
+  logger.debug(`X-GitHub-Delivery: ${deliveryId}`);
   const event = req.header('x-github-event');
 
   const payload = req.body;
 
   if (event == 'check_run') {
-    debug('ignoring check_run event');
+    logger.debug('ignoring check_run event');
     res.end();
     return;
   }
@@ -57,7 +59,7 @@ app.post('/webhook', (req, res) => {
     throw new Error(`Unexpected event: ${event}`);
   }
 
-  debug(`check_suite action: ${payload.action}`);
+  logger.debug(`check_suite action: ${payload.action}`);
   if (payload.action != 'requested') {
     res.end();
     return;
@@ -71,7 +73,7 @@ app.post('/webhook', (req, res) => {
     head_branch: payload.check_suite.head_branch,
     head_sha: payload.check_suite.head_sha,
   };
-  debug('/webhook check_suite extracted data:', data);
+  logger.debug('/webhook check_suite extracted data:', data);
   res.end();
 
   // Do the work later.
@@ -79,4 +81,6 @@ app.post('/webhook', (req, res) => {
 });
 
 const port = process.env.APP_PORT || 8080;
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, () => {
+  logger.info(`Listening on port ${port}`);
+});

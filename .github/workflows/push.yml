@@ -24,7 +24,7 @@ jobs:
       with:
         service_account_email: ${{ secrets.GCP_SA_EMAIL }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
-        project_id: ${{ secrets.GCP_PROJECT }}
-    - run: gcloud app deploy --service=checks
+        project_id: wpt-pr-bot
+    - run: gcloud app deploy
 env:
   FORCE_COLOR: 3

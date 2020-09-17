@@ -1,10 +1,22 @@
 {
+  "name": "wpt-check-app",
+  "description": "GitHub checks for spec PRs",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/foolip/wpt-check-app.git"
+  },
+  "engines": {
+    "node": ">=12"
+  },
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "@octokit/rest": "^15.9.4",
-    "express": "^4.16.3",
-    "jsonwebtoken": "^8.3.0"
+    "@octokit/rest": "15.9.4",
+    "express": "4.16.3",
+    "jsonwebtoken": "8.3.0"
   }
 }

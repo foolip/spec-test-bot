@@ -1,0 +1,15 @@
+on: pull_request
+name: PR
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - run: npm ci
+    - run: npm run lint
+env:
+  FORCE_COLOR: 3

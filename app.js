@@ -80,7 +80,7 @@ app.post('/webhook', (req, res) => {
   setTimeout(() => checks.create(data));
 });
 
-const port = process.env.APP_PORT || 8080;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
   logger.info(`Listening on port ${port}`);
 });

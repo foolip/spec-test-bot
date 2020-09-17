@@ -1,12 +1,12 @@
 {
-  "name": "wpt-check-app",
+  "name": "spec-test-bot",
   "description": "GitHub checks for spec PRs",
   "version": "0.0.1",
   "private": true,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/foolip/wpt-check-app.git"
+    "url": "https://github.com/foolip/spec-test-bot.git"
   },
   "engines": {
     "node": ">=12"

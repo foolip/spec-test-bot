@@ -12,11 +12,30 @@
     "node": ">=12"
   },
   "scripts": {
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix .",
     "start": "node app.js"
   },
   "dependencies": {
     "@octokit/rest": "15.9.4",
     "express": "4.17.1",
     "jsonwebtoken": "8.5.1"
+  },
+  "devDependencies": {
+    "eslint": "7.9.0",
+    "eslint-config-google": "0.14.0"
+  },
+  "eslintConfig": {
+    "extends": ["eslint:recommended", "google"],
+    "env": {
+      "es6": true,
+      "node": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2017
+    },
+    "rules": {
+      "require-jsdoc": "off"
+    }
   }
 }

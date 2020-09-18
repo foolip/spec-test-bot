@@ -92,6 +92,12 @@ function createExpressApp(logger) {
       return;
     }
 
+    // Do not react to any bot comments, importantly including our own ones.
+    if (payload.comment.user.type === 'Bot') {
+      logger.info(`ignoring bot comment from ${payload.comment.user.login}`);
+      return;
+    }
+
     if (event.name !== 'issue_comment') {
       logger.warn('comment reactions not implemented');
       return;

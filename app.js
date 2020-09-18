@@ -92,9 +92,17 @@ function createExpressApp(logger) {
       return;
     }
 
-    // Do not react to any bot comments, importantly including our own ones.
+    // To avoid a comment loop in the event of a mishap, do not react to any bot
+    // comments, importantly including our own ones.
     if (payload.comment.user.type === 'Bot') {
       logger.info(`ignoring bot comment from ${payload.comment.user.login}`);
+      return;
+    }
+
+    // Do nothing if this is not directed at @spec-test-bot.
+    // TODO: Avoid reacting to '@spec-test-botanist'
+    const atMentioned = payload.comment.body.includes('@spec-test-bot');
+    if (!atMentioned) {
       return;
     }
 

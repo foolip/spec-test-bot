@@ -15,58 +15,34 @@
 const bunyan = require('bunyan');
 const cloudBunyan = require('@google-cloud/logging-bunyan');
 const express = require('express');
+const {Webhooks} = require('@octokit/webhooks');
 
 const {getOctokit} = require('./lib/octokit.js');
 const checks = require('./lib/checks.js');
 const secrets = require('./secrets.json');
 
-function createExpressApp(logMiddleware) {
+function createExpressApp(logger, logMiddleware) {
   const app = express();
 
   app.use(logMiddleware);
-
-  app.use(express.json({
-    verify: (req, res, buf, encoding) => {
-      const secret = secrets.github.webhook_secret;
-      if (!secret) {
-        return;
-      }
-      const signature = req.header('x-hub-signature');
-      req.log.debug(`TODO: verify signature ${signature}`);
-      if (signature != 'sha1=30816a3aa38e10f66819a3c84868db9cc87cd2a2') {
-        throw new Error(`Signature mismatch`);
-      }
-    },
-  }));
 
   app.get('/', (req, res) => {
     res.send('Hello World!');
   });
 
-  app.post('/webhook', (req, res) => {
-    req.log.debug('/webhook invoked');
+  const webhooks = new Webhooks({
+    secret: secrets.github.webhook_secret,
+    path: '/webhook',
+  });
 
-    const deliveryId = req.header('x-github-delivery');
-    req.log.debug(`X-GitHub-Delivery: ${deliveryId}`);
-    const event = req.header('x-github-event');
+  app.use(webhooks.middleware);
 
-    const payload = req.body;
-
-    req.log.debug('/webhook payload', payload);
-
-    if (event !== 'check_suite') {
-      req.log.info(`ignoring ${event} event`);
-      res.end();
-      return;
-    }
-
+  webhooks.on('check_suite', ({id, name, payload}) => {
     if (payload.action !== 'requested') {
-      req.log.info(`ignoring check_suite action ${payload.action}`);
-      res.end();
+      logger.info(`ignoring check_suite action ${payload.action}`);
       return;
     }
 
-    // TODO: confirm that we can safely trust the app/installation ID.
     const appId = payload.check_suite.app.id;
     const installationId = payload.installation.id;
     const data = {
@@ -75,18 +51,21 @@ function createExpressApp(logMiddleware) {
       head_branch: payload.check_suite.head_branch,
       head_sha: payload.check_suite.head_sha,
     };
-    req.log.info('/webhook check_suite extracted data:', data);
-    res.end();
 
     // Do the work async.
+    logger.info('Scheduling check creation for:', data);
     setTimeout(() => {
       const octokit = getOctokit({
         appId,
         installationId,
         privateKey: secrets.github.private_key,
       });
-      checks.create(octokit, data, req.log);
+      checks.create(octokit, data, logger);
     });
+  });
+
+  webhooks.on('error', (error) => {
+    logger.error(error);
   });
 
   return app;
@@ -110,7 +89,7 @@ async function main() {
     };
   }
 
-  const app = createExpressApp(mw);
+  const app = createExpressApp(logger, mw);
 
   const port = process.env.PORT || 8080;
   app.listen(port, () => {

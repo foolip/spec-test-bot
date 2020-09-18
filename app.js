@@ -36,16 +36,23 @@ function createExpressApp(logger) {
   app.use(webhooks.middleware);
 
   webhooks.on('check_run', (event) => {
-    logger.info(event, 'webhook');
-  });
-
-  webhooks.on('check_suite', (event) => {
-    logger.info(event, 'webhook');
+    logger.debug({event}, 'check_run event');
 
     const {payload} = event;
 
-    if (payload.action !== 'requested') {
-      logger.info(`ignoring check_suite action ${payload.action}`);
+    if (payload.action === 'rerequested') {
+      logger.warn('restarting check run not implemented');
+    } else if (payload.action === 'requested_action') {
+      logger.warn('handling user actions not implemented');
+    }
+  });
+
+  webhooks.on('check_suite', (event) => {
+    logger.debug({event}, 'check_suite event');
+
+    const {payload} = event;
+
+    if (payload.action !== 'requested' && payload.action !== 'rerequested') {
       return;
     }
 
@@ -59,7 +66,7 @@ function createExpressApp(logger) {
     };
 
     // Do the work async.
-    logger.info(data, 'scheduling check creation');
+    logger.info({data}, 'scheduling check creation');
     setTimeout(() => {
       const octokit = getOctokit({
         appId,
@@ -71,15 +78,17 @@ function createExpressApp(logger) {
   });
 
   webhooks.on('issue_comment', (event) => {
-    logger.info(event, 'webhook event');
+    logger.debug({event}, 'issue_comment event');
+    logger.warn('comment reactions not implemented');
   });
 
   webhooks.on('pull_request_review_comment', (event) => {
-    logger.info(event, 'webhook event');
+    logger.debug({event}, 'pull_request_review_comment event');
+    logger.warn('comment reactions not implemented');
   });
 
   webhooks.on('error', (error) => {
-    logger.error(error, 'webhook error');
+    logger.warn(error, 'webhook error');
   });
 
   return app;

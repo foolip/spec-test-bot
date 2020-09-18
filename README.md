@@ -4,10 +4,8 @@ This GitHub App aims to provide a [check](https://developer.github.com/v3/checks
 
 ## Running
 
-To run the server, first define the following environment variables:
- * `APP_ID` is the numeric ID of the GitHub App
- * `APP_PRIVATE_KEY` is the [private key](https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/) (contents, not filename)
- * `APP_WEBHOOK_SECRET` (optional) is the [webhook secret](https://developer.github.com/webhooks/securing/) used to verify the `X-Hub-Signature` header
- * `PORT` (optional) is the port to run on. The default is 8080.
+Before you can run or deploy, copy `secrets.sample.json` to `secrets.json` and
+fill it out from the GitHub App settings page.
 
-Then, just run `npm start`.
+Then run `npm run start-dev`. The server will run on port 8080 by default,
+but this can be overridden with the `PORT` environment variable.

@@ -16,7 +16,9 @@ const bunyan = require('bunyan');
 const cloudBunyan = require('@google-cloud/logging-bunyan');
 const express = require('express');
 
+const {getOctokit} = require('./lib/octokit.js');
 const checks = require('./lib/checks.js');
+const secrets = require('./secrets.json');
 
 function createExpressApp(logMiddleware) {
   const app = express();
@@ -25,7 +27,7 @@ function createExpressApp(logMiddleware) {
 
   app.use(express.json({
     verify: (req, res, buf, encoding) => {
-      const secret = process.env.APP_WEBHOOK_SECRET;
+      const secret = secrets.github.webhook_secret;
       if (!secret) {
         return;
       }
@@ -64,9 +66,10 @@ function createExpressApp(logMiddleware) {
       return;
     }
 
+    // TODO: confirm that we can safely trust the app/installation ID.
+    const appId = payload.check_suite.app.id;
+    const installationId = payload.installation.id;
     const data = {
-      app_id: payload.check_suite.app.id,
-      installation_id: payload.installation.id,
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
       head_branch: payload.check_suite.head_branch,
@@ -75,8 +78,15 @@ function createExpressApp(logMiddleware) {
     req.log.info('/webhook check_suite extracted data:', data);
     res.end();
 
-    // Do the work later.
-    setTimeout(() => checks.create(data, req.log));
+    // Do the work async.
+    setTimeout(() => {
+      const octokit = getOctokit({
+        appId,
+        installationId,
+        privateKey: secrets.github.private_key,
+      });
+      checks.create(octokit, data, req.log);
+    });
   });
 
   return app;

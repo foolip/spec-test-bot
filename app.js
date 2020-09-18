@@ -13,18 +13,16 @@
 // limitations under the License.
 
 const bunyan = require('bunyan');
-const cloudBunyan = require('@google-cloud/logging-bunyan');
 const express = require('express');
+const {LoggingBunyan} = require('@google-cloud/logging-bunyan');
 const {Webhooks} = require('@octokit/webhooks');
 
 const {getOctokit} = require('./lib/octokit.js');
 const checks = require('./lib/checks.js');
 const secrets = require('./secrets.json');
 
-function createExpressApp(logger, logMiddleware) {
+function createExpressApp(logger) {
   const app = express();
-
-  app.use(logMiddleware);
 
   app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -71,25 +69,22 @@ function createExpressApp(logger, logMiddleware) {
   return app;
 }
 
-async function main() {
-  let logger;
-  let mw;
+function main() {
+  let stream;
   if (process.env.GOOGLE_CLOUD_PROJECT) {
-    // On AppEngine, use @google-cloud/logging-bunyan middleware.
-    ({logger, mw} = await cloudBunyan.express.middleware());
+    // On AppEngine, use @google-cloud/logging-bunyan.
+    const loggingBunyan = new LoggingBunyan();
+    stream = loggingBunyan.stream('debug');
   } else {
-    // Locally, log to stdout and make `req.log` available.
-    logger = bunyan.createLogger({
-      name: 'spec-test-bot',
-      streams: [{stream: process.stdout, level: 'debug'}],
-    });
-    mw = (req, res, next) => {
-      req.log = logger;
-      next();
-    };
+    // Locally, use bunyan directly. Pipe through bunyan for nicer output.
+    stream = {stream: process.stdout, level: 'debug'};
   }
+  const logger = bunyan.createLogger({
+    name: 'spec-test-bot',
+    streams: [stream],
+  });
 
-  const app = createExpressApp(logger, mw);
+  const app = createExpressApp(logger);
 
   const port = process.env.PORT || 8080;
   app.listen(port, () => {

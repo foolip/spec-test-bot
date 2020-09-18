@@ -15,14 +15,15 @@
     "deploy": "gcloud app deploy --project=spec-test-bot",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
-    "start": "node app.js"
+    "start": "node app.js",
+    "start-dev": "node app.js | bunyan"
   },
   "dependencies": {
-    "@google-cloud/logging-winston": "4.0.0",
+    "@google-cloud/logging-bunyan": "3.0.1",
     "@octokit/auth-app": "2.6.0",
     "@octokit/rest": "18.0.6",
-    "express": "4.17.1",
-    "winston": "3.3.3"
+    "bunyan": "1.8.14",
+    "express": "4.17.1"
   },
   "devDependencies": {
     "eslint": "7.9.0",

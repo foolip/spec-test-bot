@@ -35,7 +35,15 @@ function createExpressApp(logger) {
 
   app.use(webhooks.middleware);
 
-  webhooks.on('check_suite', ({id, name, payload}) => {
+  webhooks.on('check_run', (event) => {
+    logger.info(event, 'webhook');
+  });
+
+  webhooks.on('check_suite', (event) => {
+    logger.info(event, 'webhook');
+
+    const {payload} = event;
+
     if (payload.action !== 'requested') {
       logger.info(`ignoring check_suite action ${payload.action}`);
       return;
@@ -51,7 +59,7 @@ function createExpressApp(logger) {
     };
 
     // Do the work async.
-    logger.info('Scheduling check creation for:', data);
+    logger.info(data, 'scheduling check creation');
     setTimeout(() => {
       const octokit = getOctokit({
         appId,
@@ -62,8 +70,16 @@ function createExpressApp(logger) {
     });
   });
 
+  webhooks.on('issue_comment', (event) => {
+    logger.info(event, 'webhook event');
+  });
+
+  webhooks.on('pull_request_review_comment', (event) => {
+    logger.info(event, 'webhook event');
+  });
+
   webhooks.on('error', (error) => {
-    logger.error(error);
+    logger.error(error, 'webhook error');
   });
 
   return app;

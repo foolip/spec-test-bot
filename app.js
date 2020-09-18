@@ -21,6 +21,14 @@ const {getOctokit} = require('./lib/octokit.js');
 const checks = require('./lib/checks.js');
 const secrets = require('./secrets.json');
 
+function getOctokitFor(payload) {
+  return getOctokit({
+    appId: secrets.github.app_id,
+    privateKey: secrets.github.private_key,
+    installationId: payload.installation.id,
+  });
+}
+
 function createExpressApp(logger) {
   const app = express();
 
@@ -56,8 +64,6 @@ function createExpressApp(logger) {
       return;
     }
 
-    const appId = payload.check_suite.app.id;
-    const installationId = payload.installation.id;
     const data = {
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
@@ -68,23 +74,37 @@ function createExpressApp(logger) {
     // Do the work async.
     logger.info({data}, 'scheduling check creation');
     setTimeout(() => {
-      const octokit = getOctokit({
-        appId,
-        installationId,
-        privateKey: secrets.github.private_key,
-      });
+      const octokit = getOctokitFor(payload);
       checks.create(octokit, data, logger);
     });
   });
 
-  webhooks.on('issue_comment', (event) => {
-    logger.debug({event}, 'issue_comment event');
-    logger.warn('comment reactions not implemented');
-  });
+  webhooks.on([
+    'commit_comment',
+    'issue_comment',
+    'pull_request_review_comment',
+  ], async (event) => {
+    logger.debug({event}, 'comment event');
 
-  webhooks.on('pull_request_review_comment', (event) => {
-    logger.debug({event}, 'pull_request_review_comment event');
-    logger.warn('comment reactions not implemented');
+    const {payload} = event;
+
+    if (payload.action !== 'created' && payload.action !== 'edited') {
+      return;
+    }
+
+    if (event.name !== 'issue_comment') {
+      logger.warn('comment reactions not implemented');
+      return;
+    }
+
+    const octokit = getOctokitFor(payload);
+
+    await octokit.reactions.createForIssueComment({
+      owner: payload.repository.owner.login,
+      repo: payload.repository.name,
+      comment_id: payload.comment.id,
+      content: '+1',
+    });
   });
 
   webhooks.on('error', (error) => {

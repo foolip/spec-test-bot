@@ -53,13 +53,12 @@ function getOctokitFor(payload) {
 function createExpressApp(logger) {
   const app = express();
 
-  app.use(jsonVerifier('x-hub-signature',
-      secrets.github.webhook_secret, logger));
-
   app.get('/', (req, res) => {
     res.send('Hello World!');
   });
 
+  app.use('/api/webhook', jsonVerifier('x-hub-signature',
+      secrets.github.webhook_secret, logger));
   app.post('/api/webhook', (req, res, next) => {
     const event = req.get('x-github-event');
     const delivery = req.get('x-github-delivery');

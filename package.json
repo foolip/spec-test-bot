@@ -13,6 +13,7 @@
   },
   "scripts": {
     "deploy": "gcloud app deploy --project=spec-test-bot",
+    "deploy-staging": "gcloud app deploy --project=spec-test-bot --version=staging --no-promote",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "start": "node app.js",

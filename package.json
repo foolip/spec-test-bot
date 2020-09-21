@@ -12,12 +12,14 @@
     "node": ">=12"
   },
   "scripts": {
+    "coverage": "nyc npm run test",
     "deploy": "gcloud app deploy --project=spec-test-bot",
     "deploy-staging": "gcloud app deploy --project=spec-test-bot --version=staging --no-promote",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "start": "node app.js",
-    "start-dev": "node app.js | bunyan"
+    "start-dev": "node app.js | bunyan",
+    "test": "NODE_ENV=test mocha -u tdd"
   },
   "dependencies": {
     "@google-cloud/logging-bunyan": "3.0.1",
@@ -27,8 +29,12 @@
     "express": "4.17.1"
   },
   "devDependencies": {
+    "chai": "4.2.0",
+    "chai-http": "4.3.0",
     "eslint": "7.9.0",
-    "eslint-config-google": "0.14.0"
+    "eslint-config-google": "0.14.0",
+    "mocha": "8.1.3",
+    "nyc": "15.1.0"
   },
   "eslintConfig": {
     "extends": [
@@ -37,6 +43,7 @@
     ],
     "env": {
       "es6": true,
+      "mocha": true,
       "node": true
     },
     "parserOptions": {
@@ -45,5 +52,8 @@
     "rules": {
       "require-jsdoc": "off"
     }
+  },
+  "nyc": {
+    "all": true
   }
 }

@@ -171,4 +171,11 @@ function main() {
 
 if (require.main === module) {
   main();
+} else {
+  // Export app for testing.
+  const logger = bunyan.createLogger({
+    name: 'spec-test-bot',
+    streams: [],
+  });
+  module.exports = createExpressApp(logger);
 }

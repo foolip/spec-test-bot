@@ -17,7 +17,15 @@ const {assert} = chai;
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
-const app = require('../app.js');
+const proxyquire = require('proxyquire');
+
+const app = proxyquire('../app.js', {
+  './secrets.json': {
+    github: {
+      webhook_secret: 'mock_secret',
+    },
+  },
+});
 
 const agent = chai.request.agent(app);
 
@@ -27,6 +35,47 @@ suite('express app', () => {
     assert.equal(res.status, 200);
     assert.include(res.text, 'Hello World');
   });
+
+  suite('webhook', () => {
+    // These webhook signature test are not done as unit tests, as it is very
+    // important that it works when integrated into the app, and it is possible
+    // to cover it well from the app layer as well.
+
+    const body = JSON.stringify({});
+
+    test('with signature', async () => {
+      const {createHmac} = require('crypto');
+      const digest = createHmac('sha1', 'mock_secret')
+          .update(body).digest('hex');
+      const signature = `sha1=${digest}`;
+
+      const res = await agent.post('/api/webhook')
+          .set('x-github-event', 'dummy')
+          .set('x-hub-signature', signature)
+          .set('content-type', 'application/json')
+          .send(body);
+      assert.equal(res.status, 200);
+    });
+
+    test('with wrong signature', async () => {
+      const res = await agent.post('/api/webhook')
+          .set('x-github-event', 'dummy')
+          .set('x-hub-signature', 'sha1=wrong')
+          .set('content-type', 'application/json')
+          .send(body);
+      assert.equal(res.status, 403);
+      assert.include(res.text, 'signature mismatch');
+    });
+
+    test('with no signature', async () => {
+      const res = await agent.post('/api/webhook')
+          .set('x-github-event', 'dummy')
+          .set('content-type', 'application/json')
+          .send(body);
+      assert.equal(res.status, 403);
+      assert.include(res.text, 'no x-hub-signature header');
+    });
+  });
 });
 
-teardown(() => agent.close());
+suiteTeardown(() => agent.close());

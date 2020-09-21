@@ -22,8 +22,9 @@ const proxyquire = require('proxyquire');
 const app = proxyquire('../app.js', {
   './secrets.json': {
     github: {
-      webhook_secret: 'mock_secret',
+      webhook_secret: 'webhook_secret',
     },
+    project_secret: 'project_secret',
   },
 });
 
@@ -36,16 +37,16 @@ suite('express app', () => {
     assert.include(res.text, 'Hello World');
   });
 
-  suite('webhook', () => {
-    // These webhook signature test are not done as unit tests, as it is very
-    // important that it works when integrated into the app, and it is possible
-    // to cover it well from the app layer as well.
+  // These signature test are not done as unit tests, as it is very
+  // important that it works when integrated into the app, and it is
+  // possible to cover it well from the app layer as well.
 
+  suite('/api/webhook', () => {
     const body = JSON.stringify({});
 
     test('with signature', async () => {
       const {createHmac} = require('crypto');
-      const digest = createHmac('sha1', 'mock_secret')
+      const digest = createHmac('sha1', 'webhook_secret')
           .update(body).digest('hex');
       const signature = `sha1=${digest}`;
 
@@ -74,6 +75,43 @@ suite('express app', () => {
           .send(body);
       assert.equal(res.status, 403);
       assert.include(res.text, 'no x-hub-signature header');
+    });
+  });
+
+  suite('/api/task', () => {
+    const body = JSON.stringify({
+      name: 'test',
+      parameters: {},
+    });
+
+    test('with signature', async () => {
+      const {createHmac} = require('crypto');
+      const digest = createHmac('sha1', 'project_secret')
+          .update(body).digest('hex');
+      const signature = `sha1=${digest}`;
+
+      const res = await agent.post('/api/task')
+          .set('x-self-signature', signature)
+          .set('content-type', 'application/json')
+          .send(body);
+      assert.equal(res.status, 200);
+    });
+
+    test('with wrong signature', async () => {
+      const res = await agent.post('/api/task')
+          .set('x-self-signature', 'sha1=wrong')
+          .set('content-type', 'application/json')
+          .send(body);
+      assert.equal(res.status, 403);
+      assert.include(res.text, 'signature mismatch');
+    });
+
+    test('with no signature', async () => {
+      const res = await agent.post('/api/task')
+          .set('content-type', 'application/json')
+          .send(body);
+      assert.equal(res.status, 403);
+      assert.include(res.text, 'no x-self-signature header');
     });
   });
 });

@@ -15,6 +15,7 @@
     "coverage": "nyc npm run test",
     "deploy": "gcloud app deploy --project=spec-test-bot",
     "deploy-staging": "gcloud app deploy --project=spec-test-bot --version=staging --no-promote",
+    "deploy-queue": "gcloud app deploy --project=spec-test-bot queue.yaml",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "start": "node app.js",
@@ -23,6 +24,7 @@
   },
   "dependencies": {
     "@google-cloud/logging-bunyan": "3.0.1",
+    "@google-cloud/tasks": "2.1.1",
     "@octokit/auth-app": "2.6.0",
     "@octokit/rest": "18.0.6",
     "bunyan": "1.8.14",

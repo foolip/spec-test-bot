@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-runtime: nodejs12
-env_variables:
-  CHECKS_QUEUE_NAME: task-queue # should match queue.yaml
-  CHECKS_QUEUE_REGION: us-east4 # should match project region
+queue:
+- name: task-queue # should match app.yaml
+  rate: 1/s

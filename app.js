@@ -18,6 +18,7 @@ const secrets = require('./secrets.json');
 
 const logger = require('./lib/logger.js');
 const signedJson = require('./lib/signed-json.js');
+const tasks = require('./lib/tasks.js');
 const webhook = require('./lib/webhook.js');
 
 const app = express();
@@ -27,7 +28,7 @@ app.get('/', (req, res) => {
 });
 
 app.route('/api/webhook')
-    .post(signedJson({
+    .post(signedJson.middleware({
       header: 'x-hub-signature',
       secret: secrets.github.webhook_secret,
     }))
@@ -35,8 +36,21 @@ app.route('/api/webhook')
       const event = req.get('x-github-event');
       const delivery = req.get('x-github-delivery');
       const payload = req.body;
-      logger.info({event, delivery, payload}, 'webhook received');
-      webhook(event, payload).then(() => res.end(), next);
+      logger.info({event, delivery, payload}, 'handling webhook');
+      webhook(event, payload)
+          .then(() => res.end(), next);
+    });
+
+app.route('/api/task')
+    .post(signedJson.middleware({
+      header: 'x-self-signature',
+      secret: secrets.project_secret,
+    }))
+    .post((req, res, next) => {
+      const task = req.body;
+      logger.info({task}, 'running task');
+      tasks.run(task.name, task.parameters)
+          .then(() => res.end(), next);
     });
 
 /* istanbul ignore if */

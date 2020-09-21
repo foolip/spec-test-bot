@@ -13,12 +13,11 @@
 // limitations under the License.
 
 const {createHmac} = require('crypto');
-const bunyan = require('bunyan');
 const express = require('express');
-const {LoggingBunyan} = require('@google-cloud/logging-bunyan');
 
 const {getOctokit} = require('./lib/octokit.js');
 const checks = require('./lib/checks.js');
+const logger = require('./lib/logger.js');
 const secrets = require('./secrets.json');
 
 function sign(data, secret) {
@@ -26,7 +25,7 @@ function sign(data, secret) {
   return `sha1=${digest}`;
 }
 
-function jsonVerifier(header, secret, logger) {
+function jsonVerifier(header, secret) {
   return express.json({
     verify: (req, res, buf) => {
       const actual = req.get(header);
@@ -50,7 +49,7 @@ function getOctokitFor(payload) {
   });
 }
 
-function createExpressApp(logger) {
+function createExpressApp() {
   const app = express();
 
   app.get('/', (req, res) => {
@@ -58,7 +57,7 @@ function createExpressApp(logger) {
   });
 
   app.use('/api/webhook', jsonVerifier('x-hub-signature',
-      secrets.github.webhook_secret, logger));
+      secrets.github.webhook_secret));
   app.post('/api/webhook', (req, res, next) => {
     const event = req.get('x-github-event');
     const delivery = req.get('x-github-delivery');
@@ -92,7 +91,7 @@ function createExpressApp(logger) {
         logger.info({data}, 'scheduling check creation');
         setTimeout(() => {
           const octokit = getOctokitFor(payload);
-          checks.create(octokit, data, logger);
+          checks.create(octokit, data);
         });
         res.end();
         break;
@@ -146,36 +145,14 @@ function createExpressApp(logger) {
   return app;
 }
 
-function main() {
-  let stream;
-  if (process.env.GOOGLE_CLOUD_PROJECT) {
-    // On AppEngine, use @google-cloud/logging-bunyan.
-    const loggingBunyan = new LoggingBunyan();
-    stream = loggingBunyan.stream('debug');
-  } else {
-    // Locally, use bunyan directly. Pipe through bunyan for nicer output.
-    stream = {stream: process.stdout, level: 'debug'};
-  }
-  const logger = bunyan.createLogger({
-    name: 'spec-test-bot',
-    streams: [stream],
-  });
+const app = createExpressApp();
 
-  const app = createExpressApp(logger);
-
+if (require.main === module) {
   const port = process.env.PORT || 8080;
   app.listen(port, () => {
     logger.info(`Listening on port ${port}`);
   });
-}
-
-if (require.main === module) {
-  main();
 } else {
   // Export app for testing.
-  const logger = bunyan.createLogger({
-    name: 'spec-test-bot',
-    streams: [],
-  });
-  module.exports = createExpressApp(logger);
+  module.exports = app;
 }

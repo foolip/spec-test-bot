@@ -55,7 +55,7 @@ app.route('/api/task')
 
 app.get('/checks/:owner/:repo/:sha', (req, res)=>{
   res.json(req.params);
-})
+});
 
 
 /* istanbul ignore if */

@@ -37,6 +37,13 @@ suite('express app', () => {
     assert.include(res.text, 'Hello World');
   });
 
+  test('checks route', async ()=> {
+    const res = await agent.get('/checks/tabatkins/csswg-drafts/12345678abcdef/');
+    assert.equal(res.status, 200);
+    resText = JSON.stringify({"owner":"tabatkins","repo":"csswg-drafts","sha":"12345678abcdef"});
+    assert.include(res.text, resText);
+  })
+
   // These signature test are not done as unit tests, as it is very
   // important that it works when integrated into the app, and it is
   // possible to cover it well from the app layer as well.

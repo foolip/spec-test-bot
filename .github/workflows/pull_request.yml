@@ -11,5 +11,7 @@ jobs:
         node-version: 12
     - run: npm ci
     - run: npm run lint
+    - run: cp secrets.sample.json secrets.json
+    - run: npm run test
 env:
   FORCE_COLOR: 3

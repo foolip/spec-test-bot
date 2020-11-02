@@ -40,7 +40,7 @@ suite('express app', () => {
   test('checks route', async ()=> {
     const res = await agent.get('/checks/tabatkins/csswg-drafts/12345678abcdef/');
     assert.equal(res.status, 200);
-    assert.deepEqual(res.body, {"owner":"tabatkins","repo":"csswg-drafts","sha":"12345678abcdef"})
+    assert.deepEqual(res.body, {"owner":"tabatkins","repo":"csswg-drafts","sha":"12345678abcdef"});
   })
 
   // These signature test are not done as unit tests, as it is very

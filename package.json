@@ -20,7 +20,8 @@
     "lint-fix": "eslint --fix .",
     "start": "node app.js",
     "start-dev": "node app.js | bunyan",
-    "test": "NODE_ENV=test mocha -u tdd"
+    "test": "NODE_ENV=test mocha -u tdd",
+    "test-watch": "NODE_ENV=test mocha -u tdd --watch"
   },
   "dependencies": {
     "@google-cloud/logging-bunyan": "3.0.1",

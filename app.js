@@ -53,6 +53,11 @@ app.route('/api/task')
           .then(() => res.end(), next);
     });
 
+app.get('/checks/:owner/:repo/:sha', (req, res)=>{
+  res.json(req.params);
+});
+
+
 /* istanbul ignore if */
 if (require.main === module) {
   const port = process.env.PORT || 8080;

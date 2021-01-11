@@ -28,7 +28,7 @@
     "@google-cloud/tasks": "2.1.2",
     "@octokit/auth-app": "2.10.5",
     "@octokit/rest": "18.0.9",
-    "bunyan": "1.8.14",
+    "bunyan": "1.8.15",
     "express": "4.17.1"
   },
   "devDependencies": {

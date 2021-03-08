@@ -24,7 +24,7 @@
     "test-watch": "NODE_ENV=test mocha -u tdd --watch"
   },
   "dependencies": {
-    "@google-cloud/logging-bunyan": "3.0.1",
+    "@google-cloud/logging-bunyan": "3.0.2",
     "@google-cloud/tasks": "2.3.0",
     "@octokit/auth-app": "2.10.6",
     "@octokit/rest": "18.3.4",

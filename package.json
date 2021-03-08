@@ -24,19 +24,19 @@
     "test-watch": "NODE_ENV=test mocha -u tdd --watch"
   },
   "dependencies": {
-    "@google-cloud/logging-bunyan": "3.0.1",
+    "@google-cloud/logging-bunyan": "3.0.2",
     "@google-cloud/tasks": "2.3.0",
     "@octokit/auth-app": "2.10.6",
-    "@octokit/rest": "18.0.15",
+    "@octokit/rest": "18.3.4",
     "bunyan": "1.8.15",
     "express": "4.17.1"
   },
   "devDependencies": {
-    "chai": "4.2.0",
+    "chai": "4.3.3",
     "chai-http": "4.3.0",
-    "eslint": "7.19.0",
+    "eslint": "7.21.0",
     "eslint-config-google": "0.14.0",
-    "mocha": "8.2.1",
+    "mocha": "8.3.1",
     "nyc": "15.1.0",
     "proxyquire": "2.1.3"
   },

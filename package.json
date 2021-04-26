@@ -27,7 +27,7 @@
     "@google-cloud/logging-bunyan": "3.0.2",
     "@google-cloud/tasks": "2.3.0",
     "@octokit/auth-app": "2.10.6",
-    "@octokit/rest": "18.3.4",
+    "@octokit/rest": "18.5.3",
     "bunyan": "1.8.15",
     "express": "4.17.1"
   },

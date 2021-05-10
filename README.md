@@ -12,4 +12,6 @@ but this can be overridden with the `PORT` environment variable.
 
 ## Deploying
 
-Make sure you have a working `secrets.json` and then run `npm run deploy`.
+You will need `gcloud` from [Google Cloud SDK](https://cloud.google.com/sdk) on your `PATH` and a working `secrets.json`.
+
+Then run `npm run deploy`. This will deploy to [spec-test-bot.appspot.com](https://spec-test-bot.appspot.com/).

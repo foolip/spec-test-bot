@@ -9,3 +9,7 @@ fill it out from the GitHub App settings page.
 
 Then run `npm run start-dev`. The server will run on port 8080 by default,
 but this can be overridden with the `PORT` environment variable.
+
+## Deploying
+
+Make sure you have a working `secrets.json` and then run `npm run deploy`.

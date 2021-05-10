@@ -10,7 +10,9 @@ Now, copy `secrets.sample.json` to `secrets.json` and fill it out from the GitHu
 
 ## Running Locally
 
-Then run `npm run start-dev`. The server will run on port 8080 by default, but this can be overridden with the `PORT` environment variable.
+Then run `npm run start-dev`. The server will run on port 8080 by default, but this can be overridden with the `PORT` environment variable. (A local instance won't get any webhooks from GitHub, but can be used for debugging.)
+
+To run the tests, run `npm test`. This will automatically start the server and doesn't depend on the above.
 
 ## Deploying to App Engine
 

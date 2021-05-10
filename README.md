@@ -4,9 +4,9 @@ This GitHub App aims to provide a [check](https://developer.github.com/v3/checks
 
 ## Setup
 
-The web service in this repository is part of the [@spec-test-bot GitHub App](https://github.com/apps/spec-test-bot). If creating a new GitHub App for testing or hosting a separate instance, Set the webhook to the [`/api/webhook`](https://spec-test-bot.appspot.com/api/webhook) endpoint and add a webhook secret.
+The web service in this repository is part of the [@spec-test-bot GitHub App](https://github.com/apps/spec-test-bot). If creating a new GitHub App for testing or hosting a separate instance, set the webhook to the [`/api/webhook`](https://spec-test-bot.appspot.com/api/webhook) endpoint and add a webhook secret. An account by the [same name as the app](https://github.com/spec-test-bot) is also needed to make @mentions autocomplete, but the account isn't used for anything.
 
-Now, copy `secrets.sample.json` to `secrets.json` and fill it out from the GitHub App settings page, and fill in a random `webhook_secret` as well.
+Copy `secrets.sample.json` to `secrets.json` and fill it out from the GitHub App settings page, and fill in a random `webhook_secret` as well.
 
 ## Running Locally
 

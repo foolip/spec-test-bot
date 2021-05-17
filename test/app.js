@@ -89,7 +89,7 @@ suite('express app', () => {
   suite('/api/task', () => {
     const body = JSON.stringify({
       name: 'test',
-      parameters: {},
+      parameters: {installation_id: 1},
     });
 
     test('with signature', async () => {

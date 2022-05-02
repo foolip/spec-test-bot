@@ -29,7 +29,7 @@
     "@octokit/auth-app": "3.6.1",
     "@octokit/rest": "18.12.0",
     "bunyan": "1.8.15",
-    "express": "4.17.3"
+    "express": "4.18.1"
   },
   "devDependencies": {
     "chai": "4.3.6",
